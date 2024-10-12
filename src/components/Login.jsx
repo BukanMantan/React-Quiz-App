@@ -1,70 +1,62 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Login component to handle user login and registration
 const Login = () => {
-  const [username, setUsername] = useState(""); // Stores the entered username
-  const [password, setPassword] = useState(""); // Stores the entered password
-  const [error, setError] = useState(""); // Stores error messages (e.g., invalid password)
-  const [passwordVisible, setPasswordVisible] = useState(false); // Controls whether the password is visible
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const navigate = useNavigate(); // Hook for navigating between pages
+  const navigate = useNavigate();
 
-  // useEffect hook to log all users stored in localStorage when the page loads
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem("users")) || []; // Retrieve users from localStorage or initialize as an empty array
+    const users = JSON.parse(localStorage.getItem("users")) || [];
     console.log("All registered users:");
     users.forEach((user, index) => {
       console.log(
         `User ${index + 1}: Username = ${user.username}, Password = ${
           user.password
         }`
-      ); // Log each user’s details
+      );
     });
   }, []);
 
-  // Function to validate if the password meets the required criteria
   const validatePassword = (password) => {
-    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // Requires at least 8 characters, 1 number, 1 special character
-    return regex.test(password); // Returns true if the password matches the criteria
+    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return regex.test(password);
   };
 
-  // Function to handle user login or registration
   const handleLogin = () => {
     if (!validatePassword(password)) {
       setError(
         "Password must be at least 8 characters long, include at least 1 number, and 1 special character."
-      ); // Displays error if the password doesn't meet criteria
+      );
       return;
     }
 
-    let users = JSON.parse(localStorage.getItem("users")) || []; // Retrieve users from localStorage
+    let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Check if the username already exists
     const existingUser = users.find((user) => user.username === username);
 
     if (existingUser) {
-      // If user exists, check if the password matches
       if (existingUser.password === password) {
         console.log("Login successful");
-        localStorage.setItem("currentUser", username); // Save the current user to localStorage
-        navigate("/quiz"); // Navigate to the quiz page after successful login
+        localStorage.setItem("currentUser", username);
+        navigate("/quiz");
       } else {
-        setError("Incorrect password. Please try again."); // Display error for wrong password
+        setError("Incorrect password. Please try again.");
       }
     } else {
-      // If user does not exist, register a new user
-      const newUser = { username, password }; // Create a new user object
-      users.push(newUser); // Add the new user to the users array
-      localStorage.setItem("users", JSON.stringify(users)); // Store updated users array in localStorage
-      localStorage.setItem("currentUser", username); // Save the current user to localStorage
-      navigate("/quiz"); // Navigate to the quiz page
+      const newUser = { username, password };
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", username);
+      navigate("/quiz");
     }
   };
 
-  // Function to toggle the visibility of the password
   const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible); // Toggles between showing and hiding the password
+    setPasswordVisible(!passwordVisible);
   };
 
   return (
@@ -73,37 +65,36 @@ const Login = () => {
       <input
         type="text"
         placeholder="Enter your username"
-        value={username} // Binds the input field to the username state
-        onChange={(e) => setUsername(e.target.value)} // Updates the username state when the user types
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
         className="input-field"
       />
       <div className="password-container">
         <input
-          type={passwordVisible ? "text" : "password"} // Toggles between plain text and password masking
+          type={passwordVisible ? "text" : "password"}
           placeholder="Enter your password"
-          value={password} // Binds the input field to the password state
-          onChange={(e) => setPassword(e.target.value)} // Updates the password state when the user types
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="input-field"
         />
         <button
           type="button"
           className="eye-btn"
-          onClick={togglePasswordVisibility} // Toggles password visibility when the button is clicked
+          onClick={togglePasswordVisibility}
         >
           {passwordVisible ? "Hide Password" : "Show Password"}
         </button>
       </div>
       <button
-        onClick={handleLogin} // Calls the login function when clicked
+        onClick={handleLogin}
         className="login-btn"
-        disabled={!username || !password} // Disables the button if either username or password is empty
+        disabled={!username || !password}
       >
         Login
       </button>
       {error && <p className="error-message">{error}</p>}{" "}
-      {/* Displays error messages if there is any */}
     </div>
   );
 };
 
-export default Login; // Exporting the Login component for use in other parts of the app
+export default Login;
